@@ -8,11 +8,12 @@
 
 1. 确保已安装 Docker 和 Docker Compose
 ​​
-  Docker 安装​​：参考 [官方文档](https://docs.docker.com/engine/install/)
+- Docker 安装​​：参考 [官方文档](https://docs.docker.com/engine/install/)
 
-  ​​Docker Compose 安装​​：通常随 Docker Desktop 自动安装，独立安装可参考 [官方指南](https://docs.docker.com/compose/install/)
+- ​​Docker Compose 安装​​：通常随 Docker Desktop 自动安装，独立安装可参考 [官方指南](https://docs.docker.com/compose/install/)
 
 2. 创建数据目录
+
   创建存储 OlivOS 和 go-cqhttp 数据的本地目录：
 
   我们以默认位置为例：
@@ -20,6 +21,7 @@
   ```
   mkdir -p /opt/OlivOS-Docker
   ```
+
 3. 配置环境变量
 
 下载 `docker-compose.yml` ，把它放到服务器的一个位置上，在同一级创建 `.env` 文件。
