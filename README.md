@@ -1,6 +1,6 @@
 # OlivOS-Docker
 
-自用OlivOS-Docker，用于在linux上快速组装OlivOS。
+OlivOS-Docker，用于在linux上使用docker-compose快速组装OlivOS
 
 ## 使用方法
 
