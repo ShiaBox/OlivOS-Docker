@@ -78,7 +78,7 @@ servers:
             enabled: false
             max-queue-size: 2000
         middlewares:
-            access-token: ""
+            access-token: "7777777"
             filter: ""
             rate-limit:
                 bucket: 1
