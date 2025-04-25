@@ -7,7 +7,6 @@
 ### 准备工作
 
 #### 确保已安装 Docker 和 Docker Compose
-​​
 - Docker 安装​​：参考 [官方文档](https://docs.docker.com/engine/install/)
 
 - ​​Docker Compose 安装​​：通常随 Docker Desktop 自动安装，独立安装可参考 [官方指南](https://docs.docker.com/compose/install/)
