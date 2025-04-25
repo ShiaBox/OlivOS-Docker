@@ -11,6 +11,8 @@ RUN apt-get update && \
 # 初始化应用目录
 WORKDIR /app
 RUN git clone https://github.com/OlivOS-Team/OlivOS.git . && \
+    # 删除自带的account.json
+    rm -f conf/account.json && \
     pip install --no-cache-dir -r requirements310.txt
 
 # 下载核心插件
@@ -26,11 +28,11 @@ RUN mkdir -p plugin/app && \
 # 创建备份目录
 RUN cp -r /app /opt/backup-app
 
-# 创建脚本
+# 启动脚本
 RUN echo '#!/bin/bash\n\
-# 源代码修复\n\
+# 判断主程序文件修复\n\
 if [ ! -f "/app/main.py" ]; then\n\
-    echo "Restoring core files from backup..."\n\
+    echo "从备份文件修复主程序目录..."\n\
     cp -rf /opt/backup-app/* /app/\n\
 else\n\
     for file in main.py requirements310.txt; do\n\
@@ -40,7 +42,7 @@ else\n\
     done\n\
 fi\n\
 \n\
-# 插件文件恢复\n\
+# 插件文件修复\n\
 PLUGIN_FILES=(\n\
     "OlivaDiceCore.opk"\n\
     "OlivaDiceJoy.opk"\n\
@@ -52,10 +54,50 @@ PLUGIN_FILES=(\n\
 mkdir -p /app/plugin/app\n\
 for plugin in "${PLUGIN_FILES[@]}"; do\n\
     if [ ! -f "/app/plugin/app/${plugin}" ]; then\n\
-        echo "Restoring missing plugin: ${plugin}"\n\
+        echo "修复丢失的插件:${plugin}"\n\
         cp -f "/opt/backup-app/plugin/app/${plugin}" "/app/plugin/app/"\n\
     fi\n\
 done\n\
+\n\
+# 账户配置生成\n\
+CONF_DIR="/app/conf"\n\
+CONF_FILE="${CONF_DIR}/account.json"\n\
+mkdir -p "${CONF_DIR}"\n\
+\n\
+if [ -f "${CONF_FILE}" ]; then\n\
+    # 检查现有配置是否有效\n\
+    if ! grep -q "sdk_type" "${CONF_FILE}"; then\n\
+        echo "检测到无效配置，正在重新生成..."\n\
+        rm -f "${CONF_FILE}"\n\
+    fi\n\
+fi\n\
+\n\
+if [ ! -f "${CONF_FILE}" ]; then\n\
+    echo "生成全新账户配置......"\n\
+    UIN="${LOGIN_UIN:-123456}"\n\
+    cat <<EOF > "${CONF_FILE}"\n\
+{\n\
+    "account": [\n\
+        {\n\
+            "id": ${UIN},\n\
+            "password": "",\n\
+            "sdk_type": "onebot",\n\
+            "platform_type": "qq",\n\
+            "model_type": "default",\n\
+            "server": {\n\
+                "auto": false,\n\
+                "type": "port",\n\
+                "host": "http://go-cqhttp",\n\
+                "port": 5700,\n\
+                "access_token": "7777777"\n\
+            },\n\
+            "extends": {},\n\
+            "debug": false\n\
+        }\n\
+    ]\n\
+}\n\
+EOF\n\
+fi\n\
 \n\
 exec python3 main.py "$@"' > /usr/local/bin/olivos-entrypoint && \
     chmod +x /usr/local/bin/olivos-entrypoint
