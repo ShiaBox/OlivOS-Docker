@@ -1,0 +1,20 @@
+{
+    "account": [
+        {
+            "id": 123456,
+            "password": "",
+            "sdk_type": "onebot",
+            "platform_type": "qq",
+            "model_type": "default",
+            "server": {
+                "auto": false,
+                "type": "port",
+                "host": "http://go-cqhttp",
+                "port": 5700,
+                "access_token": "7777777"
+            },
+            "extends": {},
+            "debug": false
+        }
+    ]
+}
