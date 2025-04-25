@@ -1,0 +1,91 @@
+account:
+    allow-temp-session: false
+    auto-refresh-token: false
+    auto-register: false
+    encrypt: false
+    is-below-110: false
+    max-check-count: 0
+    password: ""
+    refresh-interval: 40
+    relogin:
+        delay: 3
+        interval: 3
+        max-times: 0
+    rule-change-sign-server: 1
+    sign-server-timeout: 15
+    sign-servers:
+        - authorization: '-'
+          key: selfshare
+          url: wss://qsign.trpgbot.com/ws
+        - authorization: '-'
+          key: selfshare
+          url: https://qsign.trpgbot.com
+        - authorization: '-'
+          key: selfshare
+          url: https://qsign-v3.trpgbot.com
+        - authorization: '-'
+          key: selfshare
+          url: wss://qsign-v3.trpgbot.com/ws
+        - authorization: '-'
+          key: selfshare
+          url: https://zyr15r-astralqsign.hf.space
+        - authorization: '-'
+          key: selfshare
+          url: wss://qsign.chahuyun.cn/ws
+        - authorization: '-'
+          key: selfshare
+          url: https://qsign.chahuyun.cn
+    status: 0
+    uin: 123
+    use-sso-address: true
+database:
+    leveldb:
+        enable: true
+    sqlite3:
+        cachettl: 3600000000000
+        enable: false
+default-middlewares:
+    access-token: ""
+    filter: ""
+    rate-limit:
+        bucket: 1
+        enabled: false
+        frequency: 1
+heartbeat:
+    interval: 5
+message:
+    convert-webp-image: false
+    extra-reply-data: false
+    fix-url: false
+    force-fragment: false
+    http-timeout: 15
+    ignore-invalid-cqcode: false
+    post-format: string
+    proxy-rewrite: ""
+    remove-reply-at: false
+    report-self-message: false
+    skip-mime-scan: false
+output:
+    debug: false
+    log-aging: 15
+    log-colorful: true
+    log-force-new: true
+    log-level: warn
+servers:
+    - http:
+        address: 0.0.0.0:5700
+        long-polling:
+            enabled: false
+            max-queue-size: 2000
+        middlewares:
+            access-token: ""
+            filter: ""
+            rate-limit:
+                bucket: 1
+                enabled: false
+                frequency: 1
+        post: 
+         - url: 'http://olivos-container:55001/OlivOSMsgApi/qq/onebot/default'
+        timeout: 5
+        version: 11
+
