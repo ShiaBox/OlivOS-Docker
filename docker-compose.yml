@@ -6,9 +6,8 @@ services:
     tty: true
     working_dir: /app
     volumes:
-      - "${OLIVOS_DATA}:/app"
+      - "${OLIVOS_DATA}/OlivOS:/app"
     environment:
-      - TZ=Asia/Shanghai
       - LOGIN_UIN=${LOGIN_UIN}
     networks:
       - olivos
@@ -19,10 +18,9 @@ services:
     image: shiaworkshop/olivos-go-cqhttp:latest
     container_name: go-cqhttp
     volumes:
-      - /root/OlivOS/go-cqhttp:/app/go-cqhttp-data
+      - "${OLIVOS_DATA}/go-cqhttp:/app/go-cqhttp-data"
     working_dir: /app
     environment:
-      - TZ=Asia/Shanghai
       - LOGIN_UIN=${LOGIN_UIN}
       - LOGIN_PASSWD=${LOGIN_PASSWD}
     networks:
