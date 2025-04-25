@@ -7,18 +7,21 @@
 ### 准备工作
 
 1. 确保已安装 Docker 和 Docker Compose
-​​Docker 安装​​：参考 [官方文档](https://docs.docker.com/engine/install/)
-​​Docker Compose 安装​​：通常随 Docker Desktop 自动安装，独立安装可参考 [官方指南](https://docs.docker.com/compose/install/)
+​​
+  Docker 安装​​：参考 [官方文档](https://docs.docker.com/engine/install/)
+
+  ​​Docker Compose 安装​​：通常随 Docker Desktop 自动安装，独立安装可参考 [官方指南](https://docs.docker.com/compose/install/)
 
 2. 创建数据目录
-创建存储 OlivOS 和 go-cqhttp 数据的本地目录：
+  创建存储 OlivOS 和 go-cqhttp 数据的本地目录：
 
-我们以默认位置为例：
+  我们以默认位置为例：
 
-```
-mkdir -p /opt/OlivOS-Docker
-```
+  ```
+  mkdir -p /opt/OlivOS-Docker
+  ```
 3. 配置环境变量
+
 下载 `docker-compose.yml` ，把它放到服务器的一个位置上，在同一级创建 `.env` 文件。
 
 在 `.env` 内，键入骰娘账号变量 `LOGIN_UIN` 和密码变量 `LOGIN_PASSWD`，密码变量可以省略，会跳到手表登录，但是手表协议不稳定，自行决定。
@@ -26,12 +29,12 @@ mkdir -p /opt/OlivOS-Docker
 变量 `OLIVOS_DATA` 是刚才创建的数据目录。
 
 .env 文件示例：
-```
-# 示例 .env 文件内容
-LOGIN_UIN=123456789       # 骰娘 QQ 账号
-LOGIN_PASSWD=your_password # 骰娘 QQ 密码
-OLIVOS_DATA=/opt/OlivOS-Docker # 持久化数据目录路径
-```
+  ```
+  # 示例 .env 文件内容
+  LOGIN_UIN=123456789       # 骰娘 QQ 账号
+  LOGIN_PASSWD=your_password # 骰娘 QQ 密码
+  OLIVOS_DATA=/opt/OlivOS-Docker # 持久化数据目录路径
+  ```
 ### 运行服务
 1. 启动所有服务
 ```
@@ -39,6 +42,7 @@ docker-compose up -d
 ```
 `-d` 表示后台运行
 首次运行会自动拉取镜像并创建容器
+
 2. 查看容器状态
 ```
 docker-compose ps
