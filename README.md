@@ -13,7 +13,7 @@ OlivOS-Docker，用于在linux上使用docker-compose快速组装OlivOS
 
 #### 创建数据目录
 
-  创建存储 OlivOS 和 go-cqhttp 数据的本地目录：
+  创建存储 OlivOS 和 napcat 数据的本地目录：
 
   我们以默认位置为例：
 
@@ -25,15 +25,14 @@ OlivOS-Docker，用于在linux上使用docker-compose快速组装OlivOS
 
 下载 `docker-compose.yml` ，把它放到服务器的一个位置上，在同一级创建 `.env` 文件。
 
-在 `.env` 内，键入骰娘账号变量 `LOGIN_UIN` 和密码变量 `LOGIN_PASSWD`，密码变量可以省略，会跳到手表登录，但是手表协议不稳定，自行决定。
+在 `.env` 内，键入骰娘账号变量 `LOGIN_UIN` 。
 
 变量 `OLIVOS_DATA` 是刚才创建的数据目录。
 
 .env 文件示例：
   ```
   # 示例 .env 文件内容
-  LOGIN_UIN=123456789       # 骰娘 QQ 账号
-  LOGIN_PASSWD=your_password # 骰娘 QQ 密码
+  LOGIN_UIN=123456       # 骰娘 QQ 账号
   OLIVOS_DATA=/opt/OlivOS-Docker # 持久化数据目录路径
   ```
 ### 运行服务
@@ -41,6 +40,18 @@ OlivOS-Docker，用于在linux上使用docker-compose快速组装OlivOS
 ```
 docker-compose up -d
 ```
+
+（可选）启动时指定项目名称
+
+docker-compose -p "olivos-${LOGIN_UIN}" up -d
+
+这样启动出来的容器名称会变成下面这样，更方便管理
+
+```
+olivos-123456_olivos-app_1
+olivos-123456_go-cqhttp_1
+```
+
 `-d` 表示后台运行
 首次运行会自动拉取镜像并创建容器
 
