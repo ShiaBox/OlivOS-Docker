@@ -1,0 +1,33 @@
+services:
+  olivos-app:
+    image: shiaworkshop/olivos:latest
+    container_name: olivos-container
+    stdin_open: true
+    tty: true
+    working_dir: /app
+    volumes:
+      - "${OLIVOS_DATA}/OlivOS:/app"
+      - "${OLIVOS_DATA}/napcat/config:/app/napcat/config"
+    environment:
+      - LOGIN_UIN=${LOGIN_UIN}
+    networks:
+      - olivos
+    depends_on:
+      - napcat
+
+  napcat:
+    image: mlikiowa/napcat-docker:latest
+    container_name: napcat
+    volumes:
+      - "${OLIVOS_DATA}/napcat/config:/app/napcat/config"
+      - "${OLIVOS_DATA}/napcat/cache:/app/napcat/cache"
+      - "${OLIVOS_DATA}/napcat/QQ_DATA:/app/.config/QQ"
+    working_dir: /app
+    environment:
+      - LOGIN_UIN=${LOGIN_UIN}
+    networks:
+      - olivos
+
+networks:
+  olivos:
+    driver: bridge
