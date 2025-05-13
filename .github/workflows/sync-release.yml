@@ -26,17 +26,12 @@ jobs:
       - name: 获取上游最新 Release (GitHub API)
         id: get_upstream_release
         run: |
-          # 调用 GitHub API 获取最新 Release
           RESPONSE=$(curl -s \
             -H "Authorization: Bearer ${{ secrets.GH_PAT }}" \
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/OlivOS-Team/OlivOS/releases/latest")
-
-          # 提取 tag_name
           TAG_NAME=$(echo "$RESPONSE" | jq -r .tag_name)
           echo "UPSTREAM_TAG=$TAG_NAME" >> $GITHUB_ENV
-
-          # 保存到步骤输出
           echo "UPSTREAM_TAG=$TAG_NAME" >> $GITHUB_OUTPUT
 
       - name: 检查是否需要处理
@@ -50,27 +45,29 @@ jobs:
 
       - name: 处理新版本
         if: env.NEW_RELEASE == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用内置 Token
         run: |
-          # 转换版本格式 (如 v0.11.61(181) → 0.11.61-181)
-          CLEAN_TAG=$(echo "${{ env.UPSTREAM_TAG }}" | sed 's/[v()]/ /g' | awk '{print $1"-"$2}')
+          # 转换标签名（确保符合 Git 引用规范）
+          CLEAN_TAG=$(echo "${{ env.UPSTREAM_TAG }}" | sed -E 's/[^a-zA-Z0-9.-]+/-/g; s/^-//; s/-+/-/g; s/-$//')
 
           # 创建 Release
           curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.GH_PAT }}" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/${{ github.repository }}/releases" \
             -d '{
-              "tag_name": "'"$CLEAN_TAG"'",
+              "tag_name": "'"${CLEAN_TAG}"'",
               "name": "",
               "body": "由官方项目发布 release 自动触发\n对应上游版本: ${{ env.UPSTREAM_TAG }}",
               "draft": false,
               "prerelease": false
             }'
 
-          # 更新跟踪文件
+          # 更新跟踪文件并推送
           echo "${{ env.UPSTREAM_TAG }}" > last_release.txt
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add last_release.txt
           git commit -m "更新上游版本跟踪至 ${{ env.UPSTREAM_TAG }}"
-          git push
+          git push "https://$GITHUB_TOKEN@github.com/${{ github.repository }}.git" HEAD:main
