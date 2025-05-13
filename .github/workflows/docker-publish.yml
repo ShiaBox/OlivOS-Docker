@@ -2,8 +2,8 @@ name: Docker Build and Push
 
 on:
   release:
-    types: [released]
-
+    types: [published, released]
+    
 env:
   DOCKERHUB_REPO: shiaworkshop/olivos
   DOCKERFILE_PATH: OlivOS/Dockerfile
@@ -14,6 +14,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      actions: read
 
     steps:
       - name: Checkout Code
@@ -39,7 +40,7 @@ jobs:
         with:
           images: ${{ env.DOCKERHUB_REPO }}
           tags: |
-            type=ref,event=tag
+            type=raw,value=${{ github.event.release.tag_name }}
             type=raw,value=latest
             type=sha
 
