@@ -41,17 +41,17 @@ OlivOS-Docker，用于在linux上使用docker-compose快速组装OlivOS
 docker-compose up -d
 ```
 
-（可选）启动时指定项目名称
+（可选）启动时指定项目名称中包含UIN
 
 ```
-docker-compose -p "olivos-${LOGIN_UIN}" up -d
+export $(grep -v '^#' .env | xargs) && docker-compose -p "olivos-${LOGIN_UIN}" up -d
 ```
 
 这样启动出来的容器名称会变成下面这样，更方便管理
 
 ```
 olivos-123456_olivos-app_1
-olivos-123456_go-cqhttp_1
+olivos-123456_napcat_1
 ```
 
 2. 查看容器状态
