@@ -1,6 +1,7 @@
 name: Sync OlivOS Release
 
 on:
+  workflow_dispatch:
   repository_dispatch:
   schedule:
     - cron: '0 */6 * * *'
