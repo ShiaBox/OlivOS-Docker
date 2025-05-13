@@ -1,11 +1,8 @@
 name: Docker Build and Push
 
 on:
-  push:
-    branches: [ "main" ]
-    tags: [ "v*.*.*" ]
-  pull_request:
-    branches: [ "main" ]
+  release:
+    types: [released]
 
 env:
   DOCKERHUB_REPO: shiaworkshop/olivos
@@ -21,6 +18,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -41,8 +40,8 @@ jobs:
           images: ${{ env.DOCKERHUB_REPO }}
           tags: |
             type=ref,event=tag
+            type=raw,value=latest
             type=sha
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
 
       - name: Build and Push
         uses: docker/build-push-action@v5
@@ -50,6 +49,6 @@ jobs:
           context: .
           file: ${{ env.DOCKERFILE_PATH }}
           platforms: linux/amd64,linux/arm64
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
