@@ -9,7 +9,7 @@
             "server": {
                 "auto": false,
                 "type": "port",
-                "host": "http://go-cqhttp",
+                "host": "http://napcat",
                 "port": 5700,
                 "access_token": "7777777"
             },
