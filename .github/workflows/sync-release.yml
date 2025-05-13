@@ -2,7 +2,6 @@ name: Sync OlivOS Release
 
 on:
   workflow_dispatch:
-  repository_dispatch:
   schedule:
     - cron: '0 */6 * * *'
 
@@ -24,18 +23,26 @@ jobs:
             echo "LAST_VERSION=0.0.0" >> $GITHUB_ENV
           fi
 
-      - name: 获取上游最新 Release
+      - name: 获取上游最新 Release (GitHub API)
         id: get_upstream_release
-        uses: dawidd6/action-get-latest-release@v1
-        with:
-          repository: 'OlivOS-Team/OlivOS'
-          token: ${{ secrets.GH_PAT }}  # 需有读取权限的 Token
+        run: |
+          # 调用 GitHub API 获取最新 Release
+          RESPONSE=$(curl -s \
+            -H "Authorization: Bearer ${{ secrets.GH_PAT }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/OlivOS-Team/OlivOS/releases/latest")
+
+          # 提取 tag_name
+          TAG_NAME=$(echo "$RESPONSE" | jq -r .tag_name)
+          echo "UPSTREAM_TAG=$TAG_NAME" >> $GITHUB_ENV
+
+          # 保存到步骤输出
+          echo "UPSTREAM_TAG=$TAG_NAME" >> $GITHUB_OUTPUT
 
       - name: 检查是否需要处理
         id: check_version
         run: |
-          # 比较版本：仅当上游版本 > 本地记录版本时继续
-          if [[ "${{ env.LAST_VERSION }}" < "${{ steps.get_upstream_release.outputs.release_tag }}" ]]; then
+          if [[ "${{ env.LAST_VERSION }}" < "${{ env.UPSTREAM_TAG }}" ]]; then
             echo "NEW_RELEASE=true" >> $GITHUB_ENV
           else
             echo "NEW_RELEASE=false" >> $GITHUB_ENV
@@ -44,26 +51,26 @@ jobs:
       - name: 处理新版本
         if: env.NEW_RELEASE == 'true'
         run: |
-          # 转换版本格式
-          NEW_TAG=$(echo "${{ steps.get_upstream_release.outputs.release_tag }}" | sed 's/[()]/ /g' | awk '{print $1"-"$2}')
+          # 转换版本格式 (如 v0.11.61(181) → 0.11.61-181)
+          CLEAN_TAG=$(echo "${{ env.UPSTREAM_TAG }}" | sed 's/[v()]/ /g' | awk '{print $1"-"$2}')
 
           # 创建 Release
           curl -X POST \
-            -H "Authorization: token ${{ secrets.GH_PAT }}" \
+            -H "Authorization: Bearer ${{ secrets.GH_PAT }}" \
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/${{ github.repository }}/releases" \
             -d '{
-              "tag_name": "'"${NEW_TAG}"'",
+              "tag_name": "'"$CLEAN_TAG"'",
               "name": "",
-              "body": "由官方项目发布 release 自动触发\n对应上游版本: ${{ steps.get_upstream_release.outputs.release_tag }}",
+              "body": "由官方项目发布 release 自动触发\n对应上游版本: ${{ env.UPSTREAM_TAG }}",
               "draft": false,
               "prerelease": false
             }'
 
           # 更新跟踪文件
-          echo "${{ steps.get_upstream_release.outputs.release_tag }}" > last_release.txt
+          echo "${{ env.UPSTREAM_TAG }}" > last_release.txt
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add last_release.txt
-          git commit -m "更新上游版本跟踪至 ${{ steps.get_upstream_release.outputs.release_tag }}"
+          git commit -m "更新上游版本跟踪至 ${{ env.UPSTREAM_TAG }}"
           git push
