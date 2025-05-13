@@ -25,6 +25,11 @@ RUN mkdir -p plugin/app && \
     https://github.com/OlivOS-Team/ChanceCustom/releases/latest/download/ChanceCustom.opk \
     https://github.com/OlivOS-Team/OlivaDiceOdyssey/releases/latest/download/OlivaDiceOdyssey.opk
 
+# 下载 NapCat配置文件
+RUN mkdir -p /app/napcat/config && \
+    wget -q -O /app/napcat/config/config-example.json \
+    https://raw.githubusercontent.com/ShiaBox/OlivOS-Docker/refs/heads/main/NapCat/config-example.json
+
 # 创建备份目录
 RUN cp -r /app /opt/backup-app
 
@@ -97,6 +102,16 @@ if [ ! -f "${CONF_FILE}" ]; then\n\
     ]\n\
 }\n\
 EOF\n\
+    \n\
+    # NapCat配置文件不存在时从备份复制\n\
+    NAPCAT_CONF="/app/napcat/config/onebot11_${UIN}.json"\n\
+    if [ ! -f "${NAPCAT_CONF}" ]; then\n\
+        mkdir -p /app/napcat/config\n\
+        cp "/opt/backup-app/napcat/config/config-example.json" "${NAPCAT_CONF}"\n\
+        echo "已生成 NapCat 配置文件：${NAPCAT_CONF}"\n\
+    else\n\
+        echo "检测到已有 NapCat 配置文件，保留用户修改：${NAPCAT_CONF}"\n\
+    fi\n\
 fi\n\
 \n\
 exec python3 main.py "$@"' > /usr/local/bin/olivos-entrypoint && \
