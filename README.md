@@ -70,3 +70,8 @@ docker-compose pull
 # 重新创建容器
 docker-compose up -d --force-recreate
 ```
+### 登录
+
+推荐使用NapCat的webUI去扫码登录，比如 `IP:6099` 或者你启动容器时映射的其他端口号。
+
+如果不会，也可以找到 `${OLIVOS_DATA}/napcat/cache` 文件夹，里面有登录二维码，每两分钟会刷新一次。
