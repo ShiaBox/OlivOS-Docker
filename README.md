@@ -43,7 +43,9 @@ docker-compose up -d
 
 （可选）启动时指定项目名称
 
+```
 docker-compose -p "olivos-${LOGIN_UIN}" up -d
+```
 
 这样启动出来的容器名称会变成下面这样，更方便管理
 
