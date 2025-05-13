@@ -1,8 +1,10 @@
 name: Docker Build and Push
 
 on:
-  release:
-    types: [published, released]
+  workflow_run:
+    workflows: ["Sync OlivOS Release"]
+    branches: [main]
+    types: [completed]
     
 env:
   DOCKERHUB_REPO: shiaworkshop/olivos
