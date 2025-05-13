@@ -1,0 +1,68 @@
+name: Sync OlivOS Release
+
+on:
+  repository_dispatch:
+  schedule:
+    - cron: '0 */6 * * *'
+
+jobs:
+  check-and-create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 读取当前跟踪的上游版本
+        id: read_last_version
+        run: |
+          if [ -f "last_release.txt" ]; then
+            echo "LAST_VERSION=$(cat last_release.txt)" >> $GITHUB_ENV
+          else
+            echo "LAST_VERSION=0.0.0" >> $GITHUB_ENV
+          fi
+
+      - name: 获取上游最新 Release
+        id: get_upstream_release
+        uses: dawidd6/action-get-latest-release@v1
+        with:
+          repository: 'OlivOS-Team/OlivOS'
+          token: ${{ secrets.GH_PAT }}  # 需有读取权限的 Token
+
+      - name: 检查是否需要处理
+        id: check_version
+        run: |
+          # 比较版本：仅当上游版本 > 本地记录版本时继续
+          if [[ "${{ env.LAST_VERSION }}" < "${{ steps.get_upstream_release.outputs.release_tag }}" ]]; then
+            echo "NEW_RELEASE=true" >> $GITHUB_ENV
+          else
+            echo "NEW_RELEASE=false" >> $GITHUB_ENV
+          fi
+
+      - name: 处理新版本
+        if: env.NEW_RELEASE == 'true'
+        run: |
+          # 转换版本格式
+          NEW_TAG=$(echo "${{ steps.get_upstream_release.outputs.release_tag }}" | sed 's/[()]/ /g' | awk '{print $1"-"$2}')
+
+          # 创建 Release
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GH_PAT }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/releases" \
+            -d '{
+              "tag_name": "'"${NEW_TAG}"'",
+              "name": "",
+              "body": "由官方项目发布 release 自动触发\n对应上游版本: ${{ steps.get_upstream_release.outputs.release_tag }}",
+              "draft": false,
+              "prerelease": false
+            }'
+
+          # 更新跟踪文件
+          echo "${{ steps.get_upstream_release.outputs.release_tag }}" > last_release.txt
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add last_release.txt
+          git commit -m "更新上游版本跟踪至 ${{ steps.get_upstream_release.outputs.release_tag }}"
+          git push
