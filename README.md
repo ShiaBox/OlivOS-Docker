@@ -52,9 +52,6 @@ olivos-123456_olivos-app_1
 olivos-123456_go-cqhttp_1
 ```
 
-`-d` 表示后台运行
-首次运行会自动拉取镜像并创建容器
-
 2. 查看容器状态
 ```
 docker-compose ps
