@@ -11,7 +11,7 @@ services:
     environment:
       - LOGIN_UIN=${ACCOUNT}
     networks:
-      - olivos-network
+      - olivos_network
     depends_on:
       - napcat
 
@@ -29,7 +29,7 @@ services:
       - NAPCAT_GID=${NAPCAT_GID:-1000}
       - ACCOUNT=${ACCOUNT}
     networks:
-      - olivos-network
+      - olivos_network
 
 networks:
   olivos:
