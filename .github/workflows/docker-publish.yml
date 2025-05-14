@@ -5,7 +5,7 @@ on:
     workflows: ["Sync OlivOS Release"]
     branches: [main]
     types: [completed]
-    
+
 env:
   DOCKERHUB_REPO: shiaworkshop/olivos
   DOCKERFILE_PATH: OlivOS/Dockerfile
@@ -16,9 +16,14 @@ jobs:
     permissions:
       contents: read
       actions: read
-    # 动态判断上游是否创建了 Release
     if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.outputs.new_release_created == 'true' }}
     steps:
+      - name: Debug Outputs
+        run: |
+          echo "Workflow Conclusion: ${{ github.event.workflow_run.conclusion }}"
+          echo "New Release Created: ${{ github.event.workflow_run.outputs.new_release_created }}"
+          echo "Release Tag: ${{ github.event.workflow_run.outputs.release_tag }}"
+
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
@@ -42,7 +47,7 @@ jobs:
         with:
           images: ${{ env.DOCKERHUB_REPO }}
           tags: |
-            type=raw,value=${{ github.event.workflow_run.outputs.release_tag }} 
+            type=raw,value=${{ github.event.workflow_run.outputs.release_tag }}
             type=raw,value=latest
             type=sha
 
