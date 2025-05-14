@@ -26,7 +26,7 @@ OlivOS-Docker，用于在linux上使用docker-compose快速组装OlivOS
 
 #### 配置环境变量
 
-  下载 `docker-compose.yml` ，把它放到服务器的一个位置上，在同一级创建 `.env` 文件。
+  下载 `docker-compose.yml` ，在同一级创建 `.env` 文件。
   
   ```
   wget https://raw.githubusercontent.com/ShiaBox/OlivOS-Docker/refs/heads/main/docker-compose.yml
