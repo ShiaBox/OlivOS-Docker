@@ -57,15 +57,11 @@ docker-compose down
 ```
 4. 更新服务
 ```
-
 # 拉取最新镜像
-```
 docker-compose pull
-```
-
 # 重新创建容器
 docker-compose up -d --force-recreate
-
+```
 
 （可选）启动时指定项目名称中包含UIN
 
