@@ -2,6 +2,8 @@
 
 OlivOS-Docker，用于在linux上使用docker-compose快速组装OlivOS
 
+[Docker Hub](https://hub.docker.com/r/shiaworkshop/olivos)
+
 ## 使用方法
 
 ### 准备工作
