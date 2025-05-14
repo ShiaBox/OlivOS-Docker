@@ -92,7 +92,7 @@ if [ ! -f "${CONF_FILE}" ]; then\n\
             "server": {\n\
                 "auto": false,\n\
                 "type": "port",\n\
-                "host": "http://go-cqhttp",\n\
+                "host": "http://napcat",\n\
                 "port": 5700,\n\
                 "access_token": "7777777"\n\
             },\n\
