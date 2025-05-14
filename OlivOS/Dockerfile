@@ -9,15 +9,15 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # 初始化应用目录
-WORKDIR /app
+WORKDIR /app/OlivOS
 RUN git clone https://github.com/OlivOS-Team/OlivOS.git . && \
     # 删除自带的account.json
     rm -f conf/account.json && \
     pip install --no-cache-dir -r requirements310.txt
 
 # 下载核心插件
-RUN mkdir -p plugin/app && \
-    wget -q -P plugin/app \
+RUN mkdir -p /app/OlivOS/plugin/app && \
+    wget -q -P /app/OlivOS/plugin/app \
     https://github.com/OlivOS-Team/OlivaDiceCore/releases/latest/download/OlivaDiceCore.opk \
     https://github.com/OlivOS-Team/OlivaDiceJoy/releases/latest/download/OlivaDiceJoy.opk \
     https://github.com/OlivOS-Team/OlivaDiceLogger/releases/latest/download/OlivaDiceLogger.opk \
@@ -36,13 +36,13 @@ RUN cp -r /app /opt/backup-app
 # 启动脚本
 RUN echo '#!/bin/bash\n\
 # 判断主程序文件修复\n\
-if [ ! -f "/app/main.py" ]; then\n\
+if [ ! -f "/app/OlivOS/main.py" ]; then\n\
     echo "从备份文件修复主程序目录..."\n\
-    cp -rf /opt/backup-app/* /app/\n\
+    cp -rf /opt/backup-app/OlivOS* /app/OlivOS/\n\
 else\n\
     for file in main.py requirements310.txt; do\n\
-        if [ ! -f "/app/${file}" ]; then\n\
-            cp -f "/opt/backup-app/${file}" "/app/${file}"\n\
+        if [ ! -f "/app/OlivOS/${file}" ]; then\n\
+            cp -f "/opt/backup-app/${file}" "/app/OlivOS/${file}"\n\
         fi\n\
     done\n\
 fi\n\
@@ -56,16 +56,16 @@ PLUGIN_FILES=(\n\
     "ChanceCustom.opk"\n\
     "OlivaDiceOdyssey.opk"\n\
 )\n\
-mkdir -p /app/plugin/app\n\
+mkdir -p /app/OlivOS/plugin/app\n\
 for plugin in "${PLUGIN_FILES[@]}"; do\n\
-    if [ ! -f "/app/plugin/app/${plugin}" ]; then\n\
+    if [ ! -f "/app/OlivOS/plugin/app/${plugin}" ]; then\n\
         echo "修复丢失的插件:${plugin}"\n\
-        cp -f "/opt/backup-app/plugin/app/${plugin}" "/app/plugin/app/"\n\
+        cp -f "/opt/backup-app/OlivOS/plugin/app/${plugin}" "/app/OlivOS/plugin/app/"\n\
     fi\n\
 done\n\
 \n\
 # 账户配置生成\n\
-CONF_DIR="/app/conf"\n\
+CONF_DIR="/app/OlivOS/conf"\n\
 CONF_FILE="${CONF_DIR}/account.json"\n\
 mkdir -p "${CONF_DIR}"\n\
 \n\
@@ -118,5 +118,5 @@ exec python3 main.py "$@"' > /usr/local/bin/olivos-entrypoint && \
     chmod +x /usr/local/bin/olivos-entrypoint
 
 # 设置工作目录和入口点
-WORKDIR /app
+WORKDIR /app/OlivOS
 ENTRYPOINT ["olivos-entrypoint"]
