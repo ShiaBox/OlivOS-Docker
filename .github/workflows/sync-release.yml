@@ -78,7 +78,7 @@ jobs:
           git config --global user.email "actions@github.com"
           git add last_release.txt
           git commit -m "更新上游版本跟踪至 ${{ env.UPSTREAM_TAG }}"
-          git push "https://x-access-token:$GITHUB_TOKEN@github.com/${{ github.repository }}.git" HEAD:main
+          git push "https://x-access-token:$GH_PAT@github.com/${{ github.repository }}.git" HEAD:main
 
           # 输出 Release 标签名供下游工作流使用
           echo "new_release=true" >> $GITHUB_OUTPUT
