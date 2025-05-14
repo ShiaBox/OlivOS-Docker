@@ -20,7 +20,7 @@ OlivOS-Docker，用于在linux上使用docker-compose快速组装OlivOS
   我们以默认位置为例：
 
   ```
-  mkdir -p /opt/OlivOS-Docker
+  OLIVOS_DATA=/opt/OlivOS-Docker; mkdir -p -m 755 $OLIVOS_DATA/OlivOS $OLIVOS_DATA/napcat/{config,cache,QQ_DATA}
   ```
 
 #### 配置环境变量
