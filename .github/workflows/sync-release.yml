@@ -27,7 +27,7 @@ jobs:
             echo "LAST_VERSION=0.0.0" >> $GITHUB_ENV
           fi
 
-      - name: 获取上游最新 Release (GitHub API)
+      - name: 获取上游最新 Release
         id: get_upstream_release
         run: |
           RESPONSE=$(curl -s \
@@ -36,7 +36,6 @@ jobs:
             "https://api.github.com/repos/OlivOS-Team/OlivOS/releases/latest")
           TAG_NAME=$(echo "$RESPONSE" | jq -r .tag_name)
           echo "UPSTREAM_TAG=$TAG_NAME" >> $GITHUB_ENV
-          echo "UPSTREAM_TAG=$TAG_NAME" >> $GITHUB_OUTPUT
 
       - name: 检查是否需要处理
         id: check_version
@@ -49,10 +48,9 @@ jobs:
 
       - name: 处理新版本
         if: env.NEW_RELEASE == 'true'
-        id: create_release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-          GH_PAT: ${{ secrets.GH_PAT }} 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           # 清理标签名
           CLEAN_TAG=$(echo "${{ env.UPSTREAM_TAG }}" | sed -E 's/[^a-zA-Z0-9.-]+/-/g; s/^-//; s/-+/-/g; s/-$//')
@@ -64,7 +62,6 @@ jobs:
             "https://api.github.com/repos/${{ github.repository }}/releases" \
             -d '{
               "tag_name": "'"${CLEAN_TAG}"'",
-              "name": "",
               "body": "由官方项目发布 release 自动触发\n对应上游版本: ${{ env.UPSTREAM_TAG }}",
               "draft": false,
               "prerelease": false
@@ -79,9 +76,12 @@ jobs:
           git push "https://${{ github.actor }}:$GH_PAT@github.com/${{ github.repository }}.git" HEAD:main --force
 
       - name: 触发 Docker 构建
+        if: env.NEW_RELEASE == 'true'
         run: |
           curl -X POST \
             -H "Authorization: Bearer $GH_PAT" \
             -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${{ github.repository }}/dispatches" \
-            -d '{"event_type": "trigger_docker_build"}'
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/docker-publish.yml/dispatches" \
+            -d '{
+              "ref": "main"
+            }'
