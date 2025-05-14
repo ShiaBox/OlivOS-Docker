@@ -1,7 +1,7 @@
 services:
   olivos-app:
     image: shiaworkshop/olivos:latest
-    container_name: olivos-container
+    container_name: olivos-main
     stdin_open: true
     tty: true
     working_dir: /app
