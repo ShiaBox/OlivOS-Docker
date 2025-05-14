@@ -31,7 +31,8 @@ OlivOS-Docker，用于在linux上使用docker-compose快速组装OlivOS
   ```
   wget https://raw.githubusercontent.com/ShiaBox/OlivOS-Docker/refs/heads/main/docker-compose.yml
   echo 'ACCOUNT=123456' > .env
-  
+  ```
+
   在 `.env` 内，变量 `LOGIN_UIN` 是键入骰娘账号，所以要替换123456为你实际的骰娘账号。
   
   .env 文件示例：
