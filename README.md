@@ -59,7 +59,7 @@ docker-compose up -d --force-recreate
 （可选）启动时指定项目名称中包含UIN
 
 ```
-export $(grep -v '^#' .env | xargs) && docker-compose -p "olivos-${LOGIN_UIN}" up -d
+export $(grep -v '^#' .env | xargs) && docker-compose -p "olivos-${ACCOUNT}" up -d
 ```
 
 这样启动出来的容器名称会变成下面这样，更方便管理
