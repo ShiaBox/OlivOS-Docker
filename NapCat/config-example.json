@@ -8,7 +8,7 @@
         "port": 5700,
         "enableCors": true,
         "enableWebsocket": true,
-        "messagePostFormat": "array",
+        "messagePostFormat": "string",
         "token": "7777777",
         "debug": false
       }
@@ -20,7 +20,7 @@
         "name": "olivos-http-client",
         "url": "http://olivos-app:55001/OlivOSMsgApi/qq/onebot/default",
         "reportSelfMessage": false,
-        "messagePostFormat": "array",
+        "messagePostFormat": "string",
         "token": "7777777",
         "debug": false
       }
