@@ -65,7 +65,7 @@ export $(grep -v '^#' .env | xargs) && docker-compose -p "olivos-${ACCOUNT}" up 
 这样启动出来的容器名称会变成下面这样，更方便管理
 
 ```
-olivos-123456_olivos-app_1
+olivos-123456_olivos-main_1
 olivos-123456_napcat_1
 ```
 
