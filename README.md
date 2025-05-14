@@ -1,6 +1,10 @@
 # OlivOS-Docker
 
-OlivOS-Docker，用于在linux上使用docker-compose快速组装OlivOS
+用于在linux上使用docker-compose快速组装OlivOS+Napcat
+
+支援amd64/arm64版本
+
+镜像会随上游版本发布自动更新
 
 [Docker Hub](https://hub.docker.com/r/shiaworkshop/olivos)
 
