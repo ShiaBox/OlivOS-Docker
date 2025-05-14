@@ -6,12 +6,12 @@ services:
     tty: true
     working_dir: /app
     volumes:
-      - "${OLIVOS_DATA}/OlivOS:/app"
-      - "${OLIVOS_DATA}/napcat/config:/app/napcat/config"
+      - "./OlivOS:/app"
+      - "./napcat/config:/app/napcat/config"
     environment:
-      - LOGIN_UIN=${LOGIN_UIN}
+      - LOGIN_UIN=${ACCOUNT}
     networks:
-      - olivos
+      - olivos-network
     depends_on:
       - napcat
 
@@ -21,14 +21,15 @@ services:
     ports:
       - "6099:6099"
     volumes:
-      - "${OLIVOS_DATA}/napcat/config:/app/napcat/config"
-      - "${OLIVOS_DATA}/napcat/cache:/app/napcat/cache"
-      - "${OLIVOS_DATA}/napcat/QQ_DATA:/app/.config/QQ"
-    working_dir: /app
+      - "./napcat/config:/app/napcat/config"
+      - "./napcat/QQ_DATA:/app/.config/QQ"
+      - "./OlivOS/plugin:/app/plugin"
     environment:
-      - LOGIN_UIN=${LOGIN_UIN}
+      - NAPCAT_UID=${NAPCAT_UID:-1000}
+      - NAPCAT_GID=${NAPCAT_GID:-1000}
+      - ACCOUNT=${ACCOUNT}
     networks:
-      - olivos
+      - olivos-network
 
 networks:
   olivos:
