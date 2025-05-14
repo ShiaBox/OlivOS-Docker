@@ -8,8 +8,8 @@ on:
 jobs:
   check-and-create-release:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    outputs:
+      new_release_created: ${{ steps.create_release.outputs.new_release || 'false' }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -47,8 +47,9 @@ jobs:
 
       - name: 处理新版本
         if: env.NEW_RELEASE == 'true'
+        id: create_release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用内置 Token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # 转换标签名（确保符合 Git 引用规范）
           CLEAN_TAG=$(echo "${{ env.UPSTREAM_TAG }}" | sed -E 's/[^a-zA-Z0-9.-]+/-/g; s/^-//; s/-+/-/g; s/-$//')
