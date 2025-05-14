@@ -1,10 +1,10 @@
 name: Docker Build and Push
 
 on:
-  workflow_run:
-    workflows: ["Sync OlivOS Release"]
+  push:
     branches: [main]
-    types: [completed]
+    paths:
+      - 'last_release.txt'  # 仅在 last_release.txt 变更时触发
 
 env:
   DOCKERHUB_REPO: shiaworkshop/olivos
@@ -15,22 +15,30 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      actions: read
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.outputs.new_release_created == 'true' }}
+      packages: write
     steps:
-      - name: Debug Outputs
-        run: |
-          echo "Workflow Conclusion: ${{ github.event.workflow_run.conclusion }}"
-          echo "New Release Created: ${{ github.event.workflow_run.outputs.new_release_created }}"
-          echo "Release Tag: ${{ github.event.workflow_run.outputs.release_tag }}"
-
       - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+      - name: 读取上游版本号
+        id: read_version
+        run: |
+          UPSTREAM_TAG=$(cat last_release.txt)
+          echo "UPSTREAM_TAG=$UPSTREAM_TAG" >> $GITHUB_ENV
+
+      - name: 获取上游 Commit SHA
+        id: get_commit_sha
+        run: |
+          # 调用 GitHub API 获取该版本对应的 Commit SHA
+          RESPONSE=$(curl -s \
+            -H "Authorization: Bearer ${{ secrets.GH_PAT }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/OlivOS-Team/OlivOS/git/ref/tags/${{ env.UPSTREAM_TAG }}")
+          
+          # 解析 Commit SHA（假设上游使用轻量级标签）
+          COMMIT_SHA=$(echo "$RESPONSE" | jq -r .object.sha)
+          echo "COMMIT_SHA=$COMMIT_SHA" >> $GITHUB_ENV
+          echo "Commit SHA: $COMMIT_SHA"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -41,22 +49,14 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Extract Metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.DOCKERHUB_REPO }}
-          tags: |
-            type=raw,value=${{ github.event.workflow_run.outputs.release_tag }}
-            type=raw,value=latest
-            type=sha
-
-      - name: Build and Push
+      - name: 构建并推送镜像
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ${{ env.DOCKERFILE_PATH }}
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: |
+            ${{ env.DOCKERHUB_REPO }}:${{ env.UPSTREAM_TAG }}
+            ${{ env.DOCKERHUB_REPO }}:${{ env.COMMIT_SHA }}
+            ${{ env.DOCKERHUB_REPO }}:latest
