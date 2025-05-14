@@ -4,7 +4,7 @@
 
 支援amd64/arm64版本
 
-镜像会随上游版本发布自动更新
+OlivOS镜像会随上游版本发布自动更新
 
 [Docker Hub](https://hub.docker.com/r/shiaworkshop/olivos)
 
