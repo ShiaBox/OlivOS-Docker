@@ -8,9 +8,6 @@ on:
 jobs:
   check-and-create-release:
     runs-on: ubuntu-latest
-    outputs:
-      new_release_created: ${{ steps.create_release.outputs.new_release || 'false' }}
-      release_tag: ${{ steps.create_release.outputs.release_tag || '' }}
     permissions:
       contents: write
       actions: read
@@ -81,13 +78,6 @@ jobs:
           git commit -m "更新上游版本跟踪至 ${{ env.UPSTREAM_TAG }}"
           git push "https://${{ github.actor }}:$GH_PAT@github.com/${{ github.repository }}.git" HEAD:main --force
 
-          # 输出用于调试
-          echo "推送使用的 Token 状态：${?}"
-          echo "触发推送后的提交 SHA: $(git rev-parse HEAD)"
-
-          # 输出变量
-          echo "new_release=true" >> $GITHUB_OUTPUT
-          echo "release_tag=${CLEAN_TAG}" >> $GITHUB_OUTPUT
       - name: 触发 Docker 构建
         run: |
           curl -X POST \
