@@ -26,30 +26,34 @@ jobs:
             echo "LAST_VERSION=0.0.0" >> $GITHUB_ENV
           fi
 
-      - name: 获取上游最新 Release
+      - name: 获取上游最新 Release (GitHub API)
         id: get_upstream_release
-        uses: dawidd6/action-get-latest-release@v7.0.0
-        with:
-          repository: 'OlivOS-Team/OlivOS'
-          token: ${{ secrets.GH_PAT }}
+        run: |
+          RESPONSE=$(curl -s \
+            -H "Authorization: Bearer ${{ secrets.GH_PAT }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/OlivOS-Team/OlivOS/releases/latest")
+          TAG_NAME=$(echo "$RESPONSE" | jq -r .tag_name)
+          echo "UPSTREAM_TAG=$TAG_NAME" >> $GITHUB_ENV
+          echo "UPSTREAM_TAG=$TAG_NAME" >> $GITHUB_OUTPUT
 
       - name: 检查是否需要处理
         id: check_version
         run: |
-          if [[ "${{ env.LAST_VERSION }}" < "${{ steps.get_upstream_release.outputs.tag }}" ]]; then
+          if [[ "${{ env.LAST_VERSION }}" < "${{ env.UPSTREAM_TAG }}" ]]; then
             echo "NEW_RELEASE=true" >> $GITHUB_ENV
           else
             echo "NEW_RELEASE=false" >> $GITHUB_ENV
           fi
 
       - name: 处理新版本
-        id: create_release
         if: env.NEW_RELEASE == 'true'
+        id: create_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # 转换标签名
-          CLEAN_TAG=$(echo "${{ steps.get_upstream_release.outputs.tag }}" | sed -E 's/[^a-zA-Z0-9.-]+/-/g; s/^-//; s/-+/-/g; s/-$//')
+          # 转换标签名（确保符合 Git 引用规范）
+          CLEAN_TAG=$(echo "${{ env.UPSTREAM_TAG }}" | sed -E 's/[^a-zA-Z0-9.-]+/-/g; s/^-//; s/-+/-/g; s/-$//')
 
           # 创建 Release
           curl -X POST \
@@ -59,11 +63,19 @@ jobs:
             -d '{
               "tag_name": "'"${CLEAN_TAG}"'",
               "name": "",
-              "body": "由官方项目发布 release 自动触发",
+              "body": "由官方项目发布 release 自动触发\n对应上游版本: ${{ env.UPSTREAM_TAG }}",
               "draft": false,
               "prerelease": false
             }'
 
-          # 传递输出变量
+          # 更新跟踪文件并推送
+          echo "${{ env.UPSTREAM_TAG }}" > last_release.txt
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add last_release.txt
+          git commit -m "更新上游版本跟踪至 ${{ env.UPSTREAM_TAG }}"
+          git push "https://$GITHUB_TOKEN@github.com/${{ github.repository }}.git" HEAD:main
+
+          # 输出 Release 标签名供下游工作流使用
           echo "new_release=true" >> $GITHUB_OUTPUT
-          echo "release_tag=${CLEAN_TAG}" >> $GITHUB_OUTPUT
+          echo "release_tag=${CLEAN_TAG}" >> $GITHUB_OUTPUT  # 关键新增行
