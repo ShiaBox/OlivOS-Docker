@@ -33,7 +33,7 @@ OlivOS-Docker，用于在linux上使用docker-compose快速组装OlivOS
   echo 'ACCOUNT=123456' > .env
   ```
 
-  在 `.env` 内，变量 `LOGIN_UIN` 是键入骰娘账号，所以要替换123456为你实际的骰娘账号。
+  在 `.env` 内，变量 `LOGIN_UIN` 是键入骰娘账号，所以要替换`123456`为你实际的骰娘账号。
 
 ### 运行服务
 1. 启动所有服务
