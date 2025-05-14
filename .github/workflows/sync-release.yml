@@ -54,13 +54,14 @@ jobs:
         if: env.NEW_RELEASE == 'true'
         id: create_release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          GH_PAT: ${{ secrets.GH_PAT }} 
         run: |
-          # 转换标签名（确保符合 Git 引用规范）
+          # 清理标签名
           CLEAN_TAG=$(echo "${{ env.UPSTREAM_TAG }}" | sed -E 's/[^a-zA-Z0-9.-]+/-/g; s/^-//; s/-+/-/g; s/-$//')
 
           # 创建 Release
-          curl -X POST \
+          curl -s -X POST \
             -H "Authorization: Bearer $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/${{ github.repository }}/releases" \
@@ -72,14 +73,18 @@ jobs:
               "prerelease": false
             }'
 
-          # 更新跟踪文件并推送
+          # 更新跟踪文件
           echo "${{ env.UPSTREAM_TAG }}" > last_release.txt
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add last_release.txt
           git commit -m "更新上游版本跟踪至 ${{ env.UPSTREAM_TAG }}"
-          git push "https://x-access-token:$GH_PAT@github.com/${{ github.repository }}.git" HEAD:main
+          git push "https://${{ github.actor }}:$GH_PAT@github.com/${{ github.repository }}.git" HEAD:main --force
 
-          # 输出 Release 标签名供下游工作流使用
+          # 输出用于调试
+          echo "推送使用的 Token 状态：${?}"
+          echo "触发推送后的提交 SHA: $(git rev-parse HEAD)"
+
+          # 输出变量
           echo "new_release=true" >> $GITHUB_OUTPUT
-          echo "release_tag=${CLEAN_TAG}" >> $GITHUB_OUTPUT  # 关键新增行
+          echo "release_tag=${CLEAN_TAG}" >> $GITHUB_OUTPUT
