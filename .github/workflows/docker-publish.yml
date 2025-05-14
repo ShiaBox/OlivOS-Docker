@@ -1,8 +1,8 @@
 name: Docker Build and Push
 
 on:
-  workflow_dispatch:  # 添加手动触发支持
-  repository_dispatch: []  # 移除旧触发方式
+  workflow_dispatch:
+  repository_dispatch:
 
 env:
   DOCKERHUB_REPO: shiaworkshop/olivos
