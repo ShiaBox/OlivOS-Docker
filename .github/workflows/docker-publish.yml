@@ -42,7 +42,7 @@ jobs:
         with:
           images: ${{ env.DOCKERHUB_REPO }}
           tags: |
-            type=raw,value=${{ github.event.release.tag_name }}
+            type=raw,value=${{ github.event.workflow_run.outputs.release_tag }} 
             type=raw,value=latest
             type=sha
 
