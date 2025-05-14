@@ -6,7 +6,7 @@ services:
     tty: true
     working_dir: /app
     volumes:
-      - "./OlivOS:/app"
+      - "./OlivOS:/app/OlivOS"
       - "./napcat/config:/app/napcat/config"
     environment:
       - LOGIN_UIN=${ACCOUNT}
@@ -23,7 +23,7 @@ services:
     volumes:
       - "./napcat/config:/app/napcat/config"
       - "./napcat/QQ_DATA:/app/.config/QQ"
-      - "./OlivOS/plugin:/app/plugin"
+      - "./OlivOS:/app/OlivOS"
     environment:
       - NAPCAT_UID=${NAPCAT_UID:-1000}
       - NAPCAT_GID=${NAPCAT_GID:-1000}
