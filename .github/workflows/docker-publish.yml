@@ -1,10 +1,8 @@
 name: Docker Build and Push
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'last_release.txt'  # 仅在 last_release.txt 变更时触发
+  repository_dispatch:
+    types: [trigger_docker_build]
 
 env:
   DOCKERHUB_REPO: shiaworkshop/olivos
