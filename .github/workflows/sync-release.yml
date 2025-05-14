@@ -5,21 +5,16 @@ on:
   schedule:
     - cron: '0 */6 * * *'
 
-outputs:
-  new_release_created: ${{ jobs.check-and-create-release.outputs.new_release_created }}
-  release_tag: ${{ jobs.check-and-create-release.outputs.release_tag }}
-
 jobs:
   check-and-create-release:
     runs-on: ubuntu-latest
+    outputs:
+      new_release_created: ${{ steps.create_release.outputs.new_release || 'false' }}
+      release_tag: ${{ steps.create_release.outputs.release_tag || '' }}
     permissions:
       contents: write
       actions: read
       id-token: write
-
-    outputs:
-      new_release_created: ${{ steps.create_release.outputs.new_release || 'false' }}
-      release_tag: ${{ steps.create_release.outputs.release_tag || '' }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
