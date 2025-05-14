@@ -34,13 +34,6 @@ OlivOS-Docker，用于在linux上使用docker-compose快速组装OlivOS
   ```
 
   在 `.env` 内，变量 `LOGIN_UIN` 是键入骰娘账号，所以要替换123456为你实际的骰娘账号。
-  
-  .env 文件示例：
-    ```
-    # 示例 .env 文件内容
-    LOGIN_UIN=123456       # 骰娘 QQ 账号
-    OLIVOS_DATA=/opt/OlivOS-Docker # 持久化数据目录路径
-    ```
 
 ### 运行服务
 1. 启动所有服务
