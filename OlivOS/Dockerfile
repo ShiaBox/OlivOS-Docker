@@ -114,7 +114,7 @@ EOF\n\
     fi\n\
 fi\n\
 \n\
-exec python3 main.py "$@"' > /usr/local/bin/olivos-entrypoint && \
+exec python3 /app/OlivOS/main.py "$@"' > /usr/local/bin/olivos-entrypoint && \
     chmod +x /usr/local/bin/olivos-entrypoint
 
 # 设置工作目录和入口点
