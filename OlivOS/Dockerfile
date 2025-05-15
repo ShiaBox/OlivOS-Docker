@@ -114,6 +114,7 @@ EOF\n\
     fi\n\
 fi\n\
 \n\
+cd /app/OlivOS\n\
 exec python3 main.py "$@"' > /usr/local/bin/olivos-entrypoint && \
     chmod +x /usr/local/bin/olivos-entrypoint
 
