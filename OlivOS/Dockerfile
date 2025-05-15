@@ -9,7 +9,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # 初始化应用目录
-WORKDIR /app/OlivOS
+WORKDIR /app/
 RUN git clone https://github.com/OlivOS-Team/OlivOS.git . && \
     # 删除自带的account.json
     rm -f conf/account.json && \
@@ -114,7 +114,7 @@ EOF\n\
     fi\n\
 fi\n\
 \n\
-exec python3 /app/OlivOS/main.py "$@"' > /usr/local/bin/olivos-entrypoint && \
+exec python3 main.py "$@"' > /usr/local/bin/olivos-entrypoint && \
     chmod +x /usr/local/bin/olivos-entrypoint
 
 # 设置工作目录和入口点
