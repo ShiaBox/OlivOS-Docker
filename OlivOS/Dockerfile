@@ -12,7 +12,7 @@ RUN apt-get update && \
 WORKDIR /app/
 RUN git clone https://github.com/OlivOS-Team/OlivOS.git . && \
     # 删除自带的account.json
-    rm -f conf/account.json && \
+    rm -f /app/OlivOS/conf/account.json && \
     pip install --no-cache-dir -r requirements310.txt
 
 # 下载核心插件
@@ -38,11 +38,11 @@ RUN echo '#!/bin/bash\n\
 # 判断主程序文件修复\n\
 if [ ! -f "/app/OlivOS/main.py" ]; then\n\
     echo "从备份文件修复主程序目录..."\n\
-    cp -rf /opt/backup-app/OlivOS* /app/OlivOS/\n\
+    cp -af /opt/backup-app/OlivOS/ /app/\n\
 else\n\
     for file in main.py requirements310.txt; do\n\
         if [ ! -f "/app/OlivOS/${file}" ]; then\n\
-            cp -f "/opt/backup-app/${file}" "/app/OlivOS/${file}"\n\
+            cp -af /opt/backup-app/OlivOS/* /app/OlivOS/\n\
         fi\n\
     done\n\
 fi\n\
