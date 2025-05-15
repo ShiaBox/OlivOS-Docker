@@ -12,7 +12,7 @@ RUN apt-get update && \
 WORKDIR /app/OlivOS
 RUN git clone https://github.com/OlivOS-Team/OlivOS.git . && \
     # 删除自带的account.json
-    rm -f /app/OlivOS/conf/account.json && \
+    rm -f conf/account.json && \
     pip install --no-cache-dir -r requirements310.txt
 
 # 下载核心插件
