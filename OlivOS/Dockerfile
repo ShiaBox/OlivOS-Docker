@@ -9,7 +9,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # 初始化应用目录
-WORKDIR /app/
+WORKDIR /app/OlivOS
 RUN git clone https://github.com/OlivOS-Team/OlivOS.git . && \
     # 删除自带的account.json
     rm -f /app/OlivOS/conf/account.json && \
