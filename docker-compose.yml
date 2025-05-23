@@ -30,6 +30,7 @@ services:
       - ACCOUNT=${ACCOUNT}
     networks:
       - olivos
+    mac_address: "02:42:16:74:4c:b0"
 
 networks:
   olivos:
